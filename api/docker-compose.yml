@@ -1,0 +1,39 @@
+version: "3.8"
+
+networks:
+  my_network:
+    driver: bridge
+
+services: 
+
+  db: 
+    image: mariadb:10.6
+    container_name: maiVe-db
+    restart: always 
+    networks:
+      - my_network  
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  api: 
+    build: .
+    container_name: maive-api
+    restart: always
+    depends_on:
+      - db
+    networks: 
+      - my_network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ConnectionStrings__DefaultConnection=Server=db;Database=Maive;User=myuser;Password=mypassword;
+    ports:
+      - "5000:5000"
+    entrypoint: ["sh", "-c", "sleep 10 && dotnet ef database update && dotnet MaiVe.dll"]
+
+volumes: 
+  mariadb_data:

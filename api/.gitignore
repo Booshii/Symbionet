@@ -1,0 +1,9 @@
+# .Net
+bin/
+obj/
+.vs/
+.vscode/
+.idea/
+
+# User-specific files
+appsettings.Development.json
